@@ -1,0 +1,22 @@
+[{
+    "step_title": "GitBucket configuration",
+    "items": [{
+        "type": "textfield",
+        "desc": "Server Port",
+        "subitems": [{
+            "key": "serverport",
+            "desc": "name",
+            "defaultValue":"8090"
+        }]
+    }, {
+        "type": "textfield",
+        "desc": "Git Data Storage path",
+        "subitems": [{
+            "key": "gitbucket_data_storage",
+            "desc": "name",
+            "defaultValue":""
+        }]
+    }]
+}];
+
+

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cd application 
+tar -czvf package.tgz *
+mv package.tgz ../package
+cd ../package
+tar -cvf GitBucket.spk *
+mv GitBucket.spk ..
+cd ..
+

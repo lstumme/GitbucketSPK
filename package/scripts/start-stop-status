@@ -1,0 +1,82 @@
+#!/bin/sh
+
+CONF_FILE=$SYNOPKG_PKGDEST/conf.sh
+source $CONF_FILE
+PID_FILE=/var/run/gitbucket.pid
+JAVA=/var/packages/Java8/target/j2sdk-image/bin/java
+GITBUCKET_WAR_FILE=$SYNOPKG_PKGDEST/gitbucket.war
+LOGFILE=$SYNOPKG_PKGDEST//gitbucket.log
+TEMP_LOGFILE=$SYNOPKG_PKGDEST//gitbuckettemp.log
+
+RETVAL=0
+
+start() {
+    echo $JAVA -jar $GITBUCKET_WAR_FILE --port=$SERVER_PORT --gitbucket.home=$DATA_STORAGE >> $TEMP_LOGFILE
+    $JAVA -jar $GITBUCKET_WAR_FILE --port=$SERVER_PORT --gitbucket.home=$DATA_STORAGE >> $LOGFILE 2>&1 & PID=$!
+    
+    sleep 1
+    while true ; do
+		ps | grep "^\s*$PID" > /dev/null 2>&1
+		RETVAL=$?
+		if [ $RETVAL -ne 0 ] ; then
+			echo "Process $PID vanished" >> $TEMP_LOGFILE
+			break;
+		fi
+		curl -s http://localhost:$SERVER_PORT > /dev/null 2>&1
+		RETVAL=$?
+		if [ $RETVAL -eq 0 ] ; then
+			break;
+		fi
+		sleep 1
+	done
+
+	if [ $RETVAL -eq 0 ] ; then
+		echo $PID > $PID_FILE
+		echo "Success" >> $TEMP_LOGFILE
+	else
+		echo "Exit code $RETVAL" >> $TEMP_LOGFILE
+	fi
+}
+
+stop() {
+	echo "Stopping GitBucket server: " >> $TEMP_LOGFILE
+
+	# Run the Java process
+	kill $(cat $PID_FILE 2>/dev/null) >> $TEMP_LOGFILE 2>&1
+	RETVAL=$?
+
+	if [ $RETVAL -eq 0 ] ; then
+		rm -f $PID_FILE
+		echo "GitBucket stopped" >> $TEMP_LOGFILE
+	else
+		echo "Stopping GitBucket failed" >> $TEMP_LOGFILE
+	fi
+}
+
+
+RETVAL=1
+
+case "$1" in
+	start)
+        start
+        exit 0
+	;;
+
+	stop)
+        stop
+		exit 0
+	;;
+
+	status)
+		exit 0
+	;;
+
+	log)
+		exit 0
+	;;
+
+	*)
+		RETVAL=1
+	;;
+esac
+exit $RETVAL

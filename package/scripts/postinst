@@ -1,0 +1,8 @@
+#!/bin/sh
+ADMINPORT=${serverport}
+DATA_STORAGE=${gitbucket_data_storage}
+CONF_FILE=$SYNOPKG_PKGDEST/conf.sh
+echo "DATA_STORAGE=$DATA_STORAGE" >> $CONF_FILE
+echo "SERVER_PORT=$ADMINPORT" >> $CONF_FILE
+chmod +x $CONF_FILE
+exit 0

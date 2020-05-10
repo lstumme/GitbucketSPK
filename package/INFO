@@ -1,0 +1,8 @@
+package="GitBucket"
+displayname="GitBucket"
+version="1.0-0000"
+os_min_ver="6.0"
+description="GitBucket is a Github like implementation that works on light systems."
+arch="noarch"
+maintainer="Ludovic Stumme"
+thirdparty="yes"
